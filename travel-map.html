@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>আমার বাংলাদেশ ভ্রমণ</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f1e8;
+  font-family:'Hind Siliguri',sans-serif;
+  color:#183b32;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:#fffdf8;
+  border-radius:22px;
+  padding:25px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+h1{
+  text-align:center;
+  margin:0;
+  font-size:30px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#777;
+  margin:5px 0 20px;
+}
+
+.counter{
+  text-align:center;
+  font-size:38px;
+  font-weight:700;
+  color:#16805d;
+}
+
+.counter span{
+  font-size:20px;
+  color:#777;
+}
+
+#map{
+  height:600px;
+  border-radius:18px;
+  margin-top:20px;
+  overflow:hidden;
+}
+
+.form{
+  margin-top:20px;
+}
+
+input[type="text"]{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:16px;
+}
+
+.photo{
+  margin-top:12px;
+}
+
+button{
+  border:0;
+  padding:13px 20px;
+  border-radius:12px;
+  background:#16805d;
+  color:white;
+  font-family:inherit;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+#result{
+  margin-top:20px;
+  padding:20px;
+  background:#f0eee5;
+  border-radius:15px;
+  display:none;
+}
+
+#result img{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  object-fit:cover;
+  float:left;
+  margin-right:15px;
+}
+
+.result-name{
+  font-size:22px;
+  font-weight:700;
+}
+
+.result-count{
+  color:#16805d;
+  font-weight:700;
+  font-size:20px;
+}
+
+@media(max-width:600px){
+
+  .container{
+    padding:10px;
+  }
+
+  .card{
+    padding:15px;
+  }
+
+  h1{
+    font-size:25px;
+  }
+
+  #map{
+    height:500px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>🇧🇩 আমার বাংলাদেশ</h1>
+
+<div class="subtitle">
+আপনি বাংলাদেশের কোন কোন জেলা ভ্রমণ করেছেন?
+</div>
+
+<div class="counter">
+<span id="count">0</span><span>/৬৪</span>
+</div>
+
+<div id="map"></div>
+
+<div class="form">
+
+<input
+type="text"
+id="name"
+placeholder="আপনার নাম লিখুন">
+
+<input
+class="photo"
+type="file"
+id="photo"
+accept="image/*">
+
+<button onclick="makeResult()">
+আমার ভ্রমণ কার্ড তৈরি করুন
+</button>
+
+</div>
+
+<div id="result">
+
+<img id="resultPhoto">
+
+<div class="result-name" id="resultName"></div>
+
+<div class="result-count">
+আমি বাংলাদেশের <span id="resultCount"></span>টি জেলা ভ্রমণ করেছি।
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let visited = new Set();
+
+const map = L.map('map',{
+  zoomControl:true
+}).setView([23.7,90.35],7);
+
+L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution:'© OpenStreetMap contributors'
+  }
+).addTo(map);
+
+
+function districtStyle(feature){
+
+  const id =
+    feature.properties.ID ||
+    feature.properties.id ||
+    feature.properties.DISTRICT_ID ||
+    feature.properties.ADM2_EN ||
+    feature.properties.NAME_2;
+
+  return {
+    fillColor:
+      visited.has(String(id))
+      ? '#16805d'
+      : '#e8e3d8',
+
+    color:'#ffffff',
+
+    weight:1,
+
+    fillOpacity:.9
+  };
+}
+
+
+function districtName(feature){
+
+  return (
+
+    feature.properties.NAME_2 ||
+
+    feature.properties.DISTRICT ||
+
+    feature.properties.name ||
+
+    feature.properties.NAME ||
+
+    feature.properties.ADM2_EN ||
+
+    'জেলা'
+
+  );
+
+}
+
+
+function districtId(feature){
+
+  return String(
+
+    feature.properties.ID ||
+
+    feature.properties.id ||
+
+    feature.properties.DISTRICT_ID ||
+
+    feature.properties.ADM2_EN ||
+
+    districtName(feature)
+
+  );
+
+}
+
+
+function onEachDistrict(feature,layer){
+
+  const id = districtId(feature);
+
+  layer.bindTooltip(
+    districtName(feature),
+    {
+      sticky:true
+    }
+  );
+
+  layer.on({
+
+    click:function(){
+
+      if(visited.has(id)){
+
+        visited.delete(id);
+
+      }else{
+
+        visited.add(id);
+
+      }
+
+      updateMap();
+
+    }
+
+  });
+
+}
+
+
+let geoLayer;
+
+
+function updateMap(){
+
+  document.getElementById('count').textContent =
+    visited.size;
+
+  if(geoLayer){
+
+    geoLayer.setStyle(districtStyle);
+
+  }
+
+}
+
+
+fetch(
+'https://raw.githubusercontent.com/mostakimjihad/bd_district_geojson/master/district.json'
+)
+
+.then(response=>{
+
+  if(!response.ok){
+
+    throw new Error('Map data loading failed');
+
+  }
+
+  return response.json();
+
+})
+
+.then(data=>{
+
+  geoLayer = L.geoJSON(
+    data,
+    {
+      style:districtStyle,
+      onEachFeature:onEachDistrict
+    }
+  ).addTo(map);
+
+  map.fitBounds(
+    geoLayer.getBounds()
+  );
+
+})
+
+.catch(error=>{
+
+  console.error(error);
+
+  alert(
+    'জেলার ম্যাপ লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।'
+  );
+
+});
+
+
+function makeResult(){
+
+  const name =
+    document.getElementById('name').value.trim();
+
+  if(!name){
+
+    alert('আগে আপনার নাম লিখুন।');
+
+    return;
+
+  }
+
+  document.getElementById('resultName')
+    .textContent=name;
+
+  document.getElementById('resultCount')
+    .textContent=visited.size;
+
+  const photo =
+    document.getElementById('photo').files[0];
+
+  if(photo){
+
+    const reader =
+      new FileReader();
+
+    reader.onload=function(e){
+
+      document.getElementById('resultPhoto')
+        .src=e.target.result;
+
+    };
+
+    reader.readAsDataURL(photo);
+
+  }
+
+  document.getElementById('result')
+    .style.display='block';
+
+  window.scrollTo({
+    top:document.body.scrollHeight,
+    behavior:'smooth'
+  });
+
+}
+
+</script>
+
+</body>
+</html>
