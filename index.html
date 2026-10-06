@@ -2,409 +2,363 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-<title>আমার বাংলাদেশ ভ্রমণ</title>
+<title>বাংলাদেশ ভ্রমণ মানচিত্র</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
 <style>
-
 *{
- box-sizing:border-box;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 body{
- margin:0;
- background:#eef6f1;
- font-family:'Hind Siliguri',sans-serif;
- color:#164b37;
+  margin:0;
+  background:#eee9dc;
+  font-family:"Hind Siliguri",sans-serif;
+  color:#173b2b;
 }
 
-.page{
- max-width:700px;
- margin:auto;
- padding:20px 12px 40px;
+.container{
+  width:min(100%,520px);
+  margin:auto;
+  padding:12px;
 }
 
-.card{
- background:#faf9f2;
- border-radius:22px;
- padding:22px;
- box-shadow:0 5px 25px #00000012;
+/* Header */
+.header{
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  text-align:center;
+  box-shadow:0 3px 15px #00000012;
+  margin-bottom:12px;
+}
+
+.header h1{
+  margin:0;
+  font-size:25px;
+  font-weight:700;
+}
+
+.header p{
+  margin:4px 0 0;
+  color:#777;
+  font-size:14px;
+}
+
+/* Form */
+.form{
+  background:#fff;
+  border-radius:18px;
+  padding:15px;
+  box-shadow:0 3px 15px #00000012;
+  margin-bottom:12px;
+}
+
+input[type="text"]{
+  width:100%;
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:13px;
+  font-family:inherit;
+  font-size:16px;
+  outline:none;
+}
+
+input[type="file"]{
+  width:100%;
+  margin-top:10px;
+  font-family:inherit;
+}
+
+/* Map Card */
+.map-card{
+  background:#e9e1cf;
+  border-radius:20px;
+  padding:10px;
+  box-shadow:0 4px 18px #00000016;
+  overflow:hidden;
 }
 
 .top{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:5px 7px 10px;
 }
 
-.photoBox{
- width:72px;
- height:72px;
- border-radius:50%;
- overflow:hidden;
- border:3px solid #17885c;
- flex-shrink:0;
- background:#eee;
+.photo{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#d8d0bd;
+  border:3px solid #fff;
+  flex:none;
 }
 
-.photoBox img{
- width:100%;
- height:100%;
- object-fit:cover;
+.info{
+  flex:1;
 }
 
-.titleArea{
- flex:1;
+.name{
+  font-size:20px;
+  font-weight:700;
+  line-height:1.1;
 }
 
-.smallTitle{
- font-size:14px;
- color:#777;
-}
-
-.nameTitle{
- font-size:22px;
- font-weight:700;
-}
-
-.score{
- font-size:42px;
- font-weight:700;
- color:#16865b;
- white-space:nowrap;
-}
-
-.score small{
- font-size:20px;
- color:#777;
-}
-
-#map{
- width:100%;
- height:570px;
- margin-top:15px;
-}
-
-.district{
- fill:#deded3;
- stroke:#ffffff;
- stroke-width:1.2;
- cursor:pointer;
- transition:.15s;
-}
-
-.district:hover{
- fill:#74b99b;
-}
-
-.district.selected{
- fill:#16865b;
-}
-
-.label{
- font-size:8px;
- fill:#183f31;
- pointer-events:none;
- text-anchor:middle;
- font-weight:600;
-}
-
-.selectedLabel{
- fill:white;
-}
-
-.progressArea{
- margin-top:10px;
+.count{
+  font-size:15px;
+  color:#687267;
+  margin-top:2px;
 }
 
 .progress{
- width:100%;
- height:8px;
- background:#dddacf;
- border-radius:20px;
- overflow:hidden;
+  height:7px;
+  background:#d1c8b5;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:7px;
 }
 
-.progressBar{
- height:100%;
- width:0%;
- background:#16865b;
- border-radius:20px;
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#277a49;
+  transition:width .15s linear;
 }
 
-.progressText{
- display:flex;
- justify-content:space-between;
- font-size:13px;
- color:#555;
- margin-top:6px;
+/* SVG */
+.map-wrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-.form{
- margin-top:20px;
+svg{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:650px;
+  touch-action:manipulation;
 }
 
-input[type=text]{
- width:100%;
- padding:13px;
- border:1px solid #d8d8d0;
- border-radius:10px;
- font-family:inherit;
- font-size:16px;
- margin-bottom:10px;
+.district{
+  fill:#f5f0e4;
+  stroke:#ffffff;
+  stroke-width:.7;
+  vector-effect:non-scaling-stroke;
+  cursor:pointer;
 }
 
-input[type=file]{
- width:100%;
- padding:10px;
- border:1px solid #d8d8d0;
- border-radius:10px;
- background:white;
+.district.selected{
+  fill:#31945a;
 }
 
+.district:active{
+  opacity:.75;
+}
+
+.label{
+  pointer-events:none;
+  fill:#26382d;
+  font-size:7px;
+  font-weight:600;
+  text-anchor:middle;
+}
+
+.dot{
+  pointer-events:none;
+  fill:#d74b42;
+}
+
+/* Bottom */
+.bottom{
+  text-align:center;
+  padding:8px 5px 3px;
+}
+
+.bottom strong{
+  font-size:16px;
+}
+
+.bottom small{
+  display:block;
+  color:#777;
+  margin-top:2px;
+}
+
+/* Button */
 button{
- width:100%;
- padding:14px;
- margin-top:12px;
- border:0;
- border-radius:10px;
- background:#16865b;
- color:white;
- font-family:inherit;
- font-size:17px;
- font-weight:600;
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:13px;
+  margin-top:10px;
+  background:#237547;
+  color:#fff;
+  font-family:inherit;
+  font-size:16px;
+  font-weight:600;
 }
 
 button:active{
- transform:scale(.98);
+  transform:scale(.98);
 }
 
-.download{
- background:#183f31;
+.loading{
+  text-align:center;
+  padding:30px 10px;
+  color:#777;
+  font-size:15px;
 }
 
-.status{
- text-align:center;
- color:#777;
- padding:15px;
+.error{
+  text-align:center;
+  padding:25px 10px;
+  color:#b33;
 }
 
-#shareCard{
- margin-top:25px;
- padding:25px;
- background:#f7f5eb;
- border-radius:18px;
- text-align:center;
- display:none;
+/* Mobile */
+@media(max-width:380px){
+  .container{
+    padding:8px;
+  }
+
+  .header h1{
+    font-size:22px;
+  }
+
+  .name{
+    font-size:18px;
+  }
+
+  .photo{
+    width:52px;
+    height:52px;
+  }
+
+  .label{
+    font-size:6px;
+  }
 }
-
-#shareCard h2{
- margin:0;
- font-size:25px;
-}
-
-.sharePhoto{
- width:75px;
- height:75px;
- border-radius:50%;
- object-fit:cover;
- border:3px solid #16865b;
- margin-bottom:5px;
-}
-
-.shareNumber{
- font-size:45px;
- font-weight:700;
- color:#16865b;
-}
-
-.shareMap{
- width:100%;
-}
-
-@media(max-width:500px){
-
- .page{
-  padding:8px;
- }
-
- .card{
-  padding:13px;
- }
-
- #map{
-  height:510px;
- }
-
- .photoBox{
-  width:58px;
-  height:58px;
- }
-
- .nameTitle{
-  font-size:17px;
- }
-
- .score{
-  font-size:31px;
- }
-
- .label{
-  font-size:6.5px;
- }
-
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="page">
+<div class="container">
 
-<div class="card" id="mainCard">
+  <div class="header">
+    <h1>🇧🇩 আমার বাংলাদেশ ভ্রমণ</h1>
+    <p>যে জেলাগুলো ঘুরেছেন সেগুলো নির্বাচন করুন</p>
+  </div>
 
-<div class="top">
+  <div class="form">
 
-<div class="photoBox">
-<img id="profilePreview"
-src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23ddd'/%3E%3Ctext x='50' y='55' text-anchor='middle' font-size='35'%3E👤%3C/text%3E%3C/svg%3E">
-</div>
+    <input
+      id="nameInput"
+      type="text"
+      placeholder="আপনার নাম লিখুন"
+      maxlength="40"
+    >
 
-<div class="titleArea">
+    <input
+      id="photoInput"
+      type="file"
+      accept="image/*"
+    >
 
-<div class="smallTitle">
-বাংলাদেশ ভ্রমণ
-</div>
+  </div>
 
-<div class="nameTitle" id="headerName">
-আপনার বাংলাদেশ
-</div>
+  <div class="map-card" id="mapCard">
 
-</div>
+    <div class="top">
 
-<div class="score">
-<span id="count">0</span><small>/৬৪</small>
-</div>
+      <img
+        id="photo"
+        class="photo"
+        alt=""
+      >
 
-</div>
+      <div class="info">
 
+        <div class="name" id="name">
+          আপনার নাম
+        </div>
 
-<div id="map">
+        <div class="count">
+          <span id="count">0</span>/64 জেলা
+        </div>
 
-<div class="status">
-বাংলাদেশের ম্যাপ লোড হচ্ছে...
-</div>
+        <div class="progress">
+          <div
+            id="progressBar"
+            class="progress-bar"
+          ></div>
+        </div>
 
-</div>
+      </div>
 
+    </div>
 
-<div class="progressArea">
+    <div class="map-wrap">
 
-<div class="progress">
+      <div
+        id="loading"
+        class="loading"
+      >
+        🗺️ বাংলাদেশের মানচিত্র লোড হচ্ছে...
+      </div>
 
-<div class="progressBar" id="progressBar"></div>
+      <svg
+        id="map"
+        viewBox="0 0 500 650"
+        style="display:none"
+      ></svg>
 
-</div>
+    </div>
 
-<div class="progressText">
+    <div class="bottom">
 
-<span id="percentText">
-০% বাংলাদেশ ঘোরা হয়েছে
-</span>
+      <strong>
+        মোট <span id="total">0</span> জেলা ভ্রমণ
+      </strong>
 
-<span>
-৬৪ জেলার মধ্যে ০টি
-</span>
+      <small>
+        🇧🇩 Unseen Bangladesh
+      </small>
 
-</div>
+    </div>
 
-</div>
+  </div>
 
-
-<div class="form">
-
-<input
-id="name"
-type="text"
-placeholder="আপনার নাম লিখুন"
-oninput="updateName()"
->
-
-<input
-id="photo"
-type="file"
-accept="image/*"
-onchange="loadPhoto(event)"
->
-
-<button onclick="makeCard()">
-আমার ভ্রমণ কার্ড তৈরি করুন
-</button>
-
-<button class="download"
-onclick="downloadCard()">
-⬇️ PNG ছবি ডাউনলোড
-</button>
-
-</div>
-
-
-<div id="shareCard">
-
-<img
-id="sharePhoto"
-class="sharePhoto"
->
-
-<h2 id="shareName">
-আপনার নাম
-</h2>
-
-<div>
-আমার বাংলাদেশ
-</div>
-
-<div class="shareNumber">
-<span id="shareCount">0</span>/৬৪
-</div>
-
-<div>
-টি জেলা ভ্রমণ করেছি 🇧🇩
-</div>
+  <button id="downloadBtn">
+    📥 ছবি হিসেবে সংরক্ষণ
+  </button>
 
 </div>
 
-</div>
 
-</div>
-
+<!-- Lightweight D3 -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 
 <script>
 
-const GEOJSON_URL =
-"https://raw.githubusercontent.com/mostakimjihad/bd_district_geojson/master/district.json";
+const GEO_URL =
+"https://raw.githubusercontent.com/yasserius/bangladesh_geojson_shapefile/master/small/small_bangladesh_geojson_adm2_64_districts_zillas.json";
 
 
-let selected = new Set();
+/* বাংলা নাম */
 
-let geoData = null;
-
-let svg;
-
-let path;
-
-let projection;
-
-
-const banglaNames = {
+const BN = {
 
 "Dhaka":"ঢাকা",
 "Faridpur":"ফরিদপুর",
@@ -418,14 +372,9 @@ const banglaNames = {
 "Mymensingh":"ময়মনসিংহ",
 "Narayanganj":"নারায়ণগঞ্জ",
 "Narsingdi":"নরসিংদী",
-"Netrokona":"নেত্রকোণা",
-"Rajbari":"রাজবাড়ী",
-"Shariatpur":"শরীয়তপুর",
-"Sherpur":"শেরপুর",
-"Tangail":"টাঙ্গাইল",
+"Netrokona":"নেত্রকোনা",
 
 "Bogra":"বগুড়া",
-"Bogura":"বগুড়া",
 "Joypurhat":"জয়পুরহাট",
 "Naogaon":"নওগাঁ",
 "Natore":"নাটোর",
@@ -443,9 +392,13 @@ const banglaNames = {
 "Rangpur":"রংপুর",
 "Thakurgaon":"ঠাকুরগাঁও",
 
-"Barguna":"বরগুনা",
+"Habiganj":"হবিগঞ্জ",
+"Moulvibazar":"মৌলভীবাজার",
+"Sunamganj":"সুনামগঞ্জ",
+"Sylhet":"সিলেট",
+
 "Barisal":"বরিশাল",
-"Barishal":"বরিশাল",
+"Barguna":"বরগুনা",
 "Bhola":"ভোলা",
 "Jhalokati":"ঝালকাঠি",
 "Patuakhali":"পটুয়াখালী",
@@ -455,27 +408,17 @@ const banglaNames = {
 "Brahmanbaria":"ব্রাহ্মণবাড়িয়া",
 "Chandpur":"চাঁদপুর",
 "Chattogram":"চট্টগ্রাম",
-"Chittagong":"চট্টগ্রাম",
 "Comilla":"কুমিল্লা",
-"Cumilla":"কুমিল্লা",
 "Cox's Bazar":"কক্সবাজার",
 "Feni":"ফেনী",
 "Khagrachhari":"খাগড়াছড়ি",
-"Khagrachari":"খাগড়াছড়ি",
 "Lakshmipur":"লক্ষ্মীপুর",
 "Noakhali":"নোয়াখালী",
 "Rangamati":"রাঙ্গামাটি",
 
-"Habiganj":"হবিগঞ্জ",
-"Moulvibazar":"মৌলভীবাজার",
-"Maulvibazar":"মৌলভীবাজার",
-"Sunamganj":"সুনামগঞ্জ",
-"Sylhet":"সিলেট",
-
 "Bagerhat":"বাগেরহাট",
 "Chuadanga":"চুয়াডাঙ্গা",
 "Jessore":"যশোর",
-"Jashore":"যশোর",
 "Jhenaidah":"ঝিনাইদহ",
 "Khulna":"খুলনা",
 "Kushtia":"কুষ্টিয়া",
@@ -487,285 +430,330 @@ const banglaNames = {
 };
 
 
-function getDistrictName(d){
+const svg =
+d3.select("#map");
 
- return d.properties.ADM2_EN ||
- d.properties.NAME_2 ||
- d.properties.DISTRICT ||
- d.properties.name ||
- "জেলা";
+const selected =
+new Set();
 
-}
-
-
-function getId(d){
-
- return getDistrictName(d);
-
-}
+const width = 500;
+const height = 650;
 
 
-function updateCounter(){
+/* নাম */
 
- const total = selected.size;
+document
+.getElementById("nameInput")
+.addEventListener("input", function(){
 
- document.getElementById("count").textContent = total;
-
- const percent =
- Math.round((total / 64) * 100);
-
- document.getElementById("progressBar")
- .style.width = percent + "%";
-
- document.getElementById("percentText")
- .textContent =
- percent + "% বাংলাদেশ ঘোরা হয়েছে";
-
- document.querySelector(
- ".progressText span:last-child"
- ).textContent =
- "৬৪ জেলার মধ্যে " + total + "টি";
-
- if(svg){
-
-  svg.selectAll(".district")
-  .attr("class",d =>
-    "district " +
-    (selected.has(getId(d)) ? "selected" : "")
-  );
-
-  svg.selectAll(".label")
-  .attr("class",d =>
-    "label " +
-    (selected.has(getId(d)) ? "selectedLabel" : "")
-  );
-
- }
-
-}
-
-
-function drawMap(data){
-
- const box =
- document.getElementById("map");
-
- box.innerHTML = "";
-
- const width =
- box.clientWidth;
-
- const height =
- box.clientHeight;
-
- svg =
- d3.select("#map")
- .append("svg")
- .attr("width",width)
- .attr("height",height)
- .attr("viewBox",
-       `0 0 ${width} ${height}`);
-
- projection =
- d3.geoMercator();
-
- projection.fitSize(
-  [width - 10,height - 10],
-  data
- );
-
- path =
- d3.geoPath()
- .projection(projection);
-
-
- svg.selectAll(".district")
- .data(data.features)
- .enter()
- .append("path")
- .attr("class","district")
- .attr("d",path)
- .on("click",function(event,d){
-
-   const id = getId(d);
-
-   if(selected.has(id)){
-     selected.delete(id);
-   }else{
-     selected.add(id);
-   }
-
-   updateCounter();
-
- });
-
-
- svg.selectAll(".label")
- .data(data.features)
- .enter()
- .append("text")
- .attr("class","label")
- .attr("transform",d => {
-
-   const c =
-   path.centroid(d);
-
-   return `translate(${c[0]},${c[1]})`;
-
- })
- .text(d => {
-
-   const en = getDistrictName(d);
-
-   return banglaNames[en] || en;
-
- });
-
- updateCounter();
-
-}
-
-
-fetch(GEOJSON_URL)
-
-.then(r => {
-
- if(!r.ok)
-  throw new Error("GeoJSON load failed");
-
- return r.json();
-
-})
-
-.then(data => {
-
- geoData = data;
-
- drawMap(data);
-
-})
-
-.catch(err => {
-
- console.error(err);
-
- document.getElementById("map")
- .innerHTML =
-
- "<div class='status'>" +
- "ম্যাপ লোড করা যায়নি। আবার Refresh করুন।" +
- "</div>";
+  document
+  .getElementById("name")
+  .textContent =
+  this.value.trim() || "আপনার নাম";
 
 });
 
 
-function updateName(){
+/* ছবি */
 
- const name =
- document.getElementById("name")
- .value.trim();
+document
+.getElementById("photoInput")
+.addEventListener("change", function(){
 
- document.getElementById("headerName")
- .textContent =
- name || "আপনার বাংলাদেশ";
+  const file = this.files[0];
 
-}
+  if(!file) return;
 
+  const reader = new FileReader();
 
-function loadPhoto(event){
+  reader.onload = function(e){
 
- const file =
- event.target.files[0];
+    document
+    .getElementById("photo")
+    .src = e.target.result;
 
- if(!file)return;
+  };
 
- const reader =
- new FileReader();
+  reader.readAsDataURL(file);
 
- reader.onload = function(e){
-
-  document.getElementById("profilePreview")
-  .src = e.target.result;
-
-  document.getElementById("sharePhoto")
-  .src = e.target.result;
-
- };
-
- reader.readAsDataURL(file);
-
-}
+});
 
 
-function makeCard(){
+/* কাউন্টার */
 
- const name =
- document.getElementById("name")
- .value.trim();
+function updateCount(){
 
- if(!name){
+  const n = selected.size;
 
-  alert("আপনার নাম লিখুন");
+  document
+  .getElementById("count")
+  .textContent = n;
 
-  return;
+  document
+  .getElementById("total")
+  .textContent = n;
 
- }
-
- document.getElementById("shareName")
- .textContent = name;
-
- document.getElementById("shareCount")
- .textContent = selected.size;
-
- document.getElementById("shareCard")
- .style.display = "block";
-
- document.getElementById("shareCard")
- .scrollIntoView({
-  behavior:"smooth"
- });
+  document
+  .getElementById("progressBar")
+  .style.width =
+  ((n / 64) * 100) + "%";
 
 }
 
 
-function downloadCard(){
+/* জেলা ম্যাপ */
 
- const name =
- document.getElementById("name")
- .value.trim();
+async function loadMap(){
 
- if(!name){
+  try{
 
-  alert("আগে আপনার নাম লিখুন");
+    const response =
+      await fetch(GEO_URL, {
+        cache:"force-cache"
+      });
 
-  return;
+    if(!response.ok)
+      throw new Error("GeoJSON error");
 
- }
+    const geojson =
+      await response.json();
 
- const target =
- document.getElementById("mainCard");
 
- html2canvas(target,{
-   scale:2,
-   backgroundColor:"#faf9f2",
-   useCORS:true
- })
- .then(canvas => {
+    /*
+      map projection
+      একবারই তৈরি হবে
+    */
 
-   const link =
-   document.createElement("a");
+    const projection =
+      d3.geoMercator()
+      .fitSize(
+        [width - 20, height - 20],
+        geojson
+      );
 
-   link.download =
-   "amar-bangladesh.png";
 
-   link.href =
-   canvas.toDataURL("image/png");
+    const path =
+      d3.geoPath()
+      .projection(projection);
 
-   link.click();
 
- });
+    svg
+      .attr("viewBox",
+            `0 0 ${width} ${height}`);
+
+
+    /*
+      জেলা
+    */
+
+    svg
+    .selectAll(".district")
+    .data(geojson.features)
+    .enter()
+    .append("path")
+    .attr("class","district")
+    .attr("d",path)
+    .attr("data-name",d => {
+
+      return getName(d);
+
+    })
+    .on("click",function(event,d){
+
+      event.preventDefault();
+
+      const name =
+        getName(d);
+
+      if(selected.has(name)){
+
+        selected.delete(name);
+
+        d3.select(this)
+          .classed("selected",false);
+
+      }else{
+
+        selected.add(name);
+
+        d3.select(this)
+          .classed("selected",true);
+
+      }
+
+      updateCount();
+
+    });
+
+
+    /*
+      label
+    */
+
+    svg
+    .selectAll(".label")
+    .data(geojson.features)
+    .enter()
+    .append("text")
+    .attr("class","label")
+    .attr("x",d =>
+      path.centroid(d)[0]
+    )
+    .attr("y",d =>
+      path.centroid(d)[1] + 2
+    )
+    .text(d =>
+      BN[getName(d)] || getName(d)
+    );
+
+
+    /*
+      ছোট লাল dot
+    */
+
+    svg
+    .selectAll(".dot")
+    .data(geojson.features)
+    .enter()
+    .append("circle")
+    .attr("class","dot")
+    .attr("r",1.8)
+    .attr("cx",d =>
+      path.centroid(d)[0]
+    )
+    .attr("cy",d =>
+      path.centroid(d)[1] - 5
+    );
+
+
+    document
+      .getElementById("loading")
+      .style.display="none";
+
+    svg
+      .style("display","block");
+
+
+  }catch(error){
+
+    console.error(error);
+
+    document
+      .getElementById("loading")
+      .className="error";
+
+    document
+      .getElementById("loading")
+      .textContent =
+      "❌ ম্যাপ লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।";
+
+  }
 
 }
+
+
+/* জেলা নাম বের করা */
+
+function getName(feature){
+
+  const p =
+    feature.properties || {};
+
+  return (
+    p.ADM2_EN ||
+    p.NAME_2 ||
+    p.name ||
+    p.district ||
+    p.DISTRICT ||
+    ""
+  )
+  .trim();
+
+}
+
+
+/* ছবি ডাউনলোড */
+
+document
+.getElementById("downloadBtn")
+.addEventListener("click", async function(){
+
+  const button = this;
+
+  button.disabled = true;
+  button.textContent = "⏳ ছবি তৈরি হচ্ছে...";
+
+  try{
+
+    /*
+      html2canvas শুধু
+      button চাপার সময় লোড হবে।
+      তাই ফোনে সবসময় RAM খাবে না।
+    */
+
+    if(!window.html2canvas){
+
+      await new Promise((resolve,reject)=>{
+
+        const script =
+        document.createElement("script");
+
+        script.src =
+        "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+
+        script.onload=resolve;
+        script.onerror=reject;
+
+        document.head.appendChild(script);
+
+      });
+
+    }
+
+
+    const canvas =
+      await html2canvas(
+        document.getElementById("mapCard"),
+        {
+          scale:2,
+          backgroundColor:"#e9e1cf",
+          useCORS:true
+        }
+      );
+
+
+    const link =
+      document.createElement("a");
+
+    link.download =
+      "bangladesh-travel-map.png";
+
+    link.href =
+      canvas.toDataURL("image/png");
+
+    link.click();
+
+
+  }catch(error){
+
+    alert("ছবি তৈরি করা যায়নি। আবার চেষ্টা করুন।");
+
+    console.error(error);
+
+  }
+
+  button.disabled = false;
+  button.textContent =
+    "📥 ছবি হিসেবে সংরক্ষণ";
+
+});
+
+
+/* Start */
+
+loadMap();
+
+updateCount();
 
 </script>
 
