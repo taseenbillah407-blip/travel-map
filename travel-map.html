@@ -6,199 +6,174 @@
 
 <title>আমার বাংলাদেশ ভ্রমণ</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
-  margin:0;
-  background:#f5f1e8;
-  font-family:'Hind Siliguri',sans-serif;
-  color:#183b32;
+    margin:0;
+    font-family:'Hind Siliguri',sans-serif;
+    background:#eef7f1;
+    color:#173d2c;
 }
 
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
+.box{
+    max-width:850px;
+    margin:auto;
+    padding:15px;
 }
 
 .card{
-  background:#fffdf8;
-  border-radius:22px;
-  padding:25px;
-  box-shadow:0 8px 30px rgba(0,0,0,.08);
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 5px 25px #0001;
 }
 
 h1{
-  text-align:center;
-  margin:0;
-  font-size:30px;
+    text-align:center;
+    margin:0;
+    font-size:30px;
 }
 
-.subtitle{
-  text-align:center;
-  color:#777;
-  margin:5px 0 20px;
+.sub{
+    text-align:center;
+    color:#777;
+    margin:5px 0 15px;
 }
 
 .counter{
-  text-align:center;
-  font-size:38px;
-  font-weight:700;
-  color:#16805d;
+    text-align:center;
+    font-size:42px;
+    font-weight:bold;
+    color:#07844a;
 }
 
-.counter span{
-  font-size:20px;
-  color:#777;
+.map{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin-top:15px;
 }
 
-#map{
-  height:600px;
-  border-radius:18px;
-  margin-top:20px;
-  overflow:hidden;
+.district{
+    border:1px solid #c9d8cf;
+    background:#f5faf7;
+    padding:10px 4px;
+    border-radius:9px;
+    text-align:center;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:14px;
 }
 
-.form{
-  margin-top:20px;
+.district.selected{
+    background:#07844a;
+    color:white;
+    border-color:#07844a;
 }
 
-input[type="text"]{
-  width:100%;
-  padding:14px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  font-family:inherit;
-  font-size:16px;
-}
-
-.photo{
-  margin-top:12px;
+input{
+    width:100%;
+    margin-top:15px;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-family:inherit;
+    font-size:16px;
 }
 
 button{
-  border:0;
-  padding:13px 20px;
-  border-radius:12px;
-  background:#16805d;
-  color:white;
-  font-family:inherit;
-  font-size:16px;
-  cursor:pointer;
-  margin-top:12px;
+    width:100%;
+    margin-top:12px;
+    padding:13px;
+    border:0;
+    border-radius:10px;
+    background:#07844a;
+    color:white;
+    font-family:inherit;
+    font-size:17px;
+    cursor:pointer;
 }
 
-button:hover{
-  opacity:.9;
+.result{
+    display:none;
+    margin-top:20px;
+    padding:25px;
+    border-radius:18px;
+    background:#e9f6ed;
+    text-align:center;
 }
 
-#result{
-  margin-top:20px;
-  padding:20px;
-  background:#f0eee5;
-  border-radius:15px;
-  display:none;
+.result h2{
+    margin:0;
 }
 
-#result img{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  object-fit:cover;
-  float:left;
-  margin-right:15px;
+.result strong{
+    font-size:35px;
+    color:#07844a;
 }
 
-.result-name{
-  font-size:22px;
-  font-weight:700;
-}
+@media(max-width:500px){
+    .map{
+        grid-template-columns:repeat(3,1fr);
+    }
 
-.result-count{
-  color:#16805d;
-  font-weight:700;
-  font-size:20px;
-}
-
-@media(max-width:600px){
-
-  .container{
-    padding:10px;
-  }
-
-  .card{
-    padding:15px;
-  }
-
-  h1{
-    font-size:25px;
-  }
-
-  #map{
-    height:500px;
-  }
+    h1{
+        font-size:25px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
 
 <div class="card">
 
 <h1>🇧🇩 আমার বাংলাদেশ</h1>
 
-<div class="subtitle">
-আপনি বাংলাদেশের কোন কোন জেলা ভ্রমণ করেছেন?
+<div class="sub">
+আপনি বাংলাদেশের কোন কোন জেলায় ভ্রমণ করেছেন?
 </div>
 
 <div class="counter">
-<span id="count">0</span><span>/৬৪</span>
+<span id="total">0</span> / 64
 </div>
 
-<div id="map"></div>
-
-<div class="form">
+<div class="map" id="districtMap"></div>
 
 <input
-type="text"
 id="name"
+type="text"
 placeholder="আপনার নাম লিখুন">
 
 <input
-class="photo"
-type="file"
 id="photo"
+type="file"
 accept="image/*">
 
-<button onclick="makeResult()">
+<button onclick="createCard()">
 আমার ভ্রমণ কার্ড তৈরি করুন
 </button>
 
-</div>
+<div class="result" id="result">
 
-<div id="result">
+<h2 id="resultName"></h2>
 
-<img id="resultPhoto">
+<p>
+আমি বাংলাদেশের
+</p>
 
-<div class="result-name" id="resultName"></div>
+<strong>
+<span id="resultTotal">0</span> / 64
+</strong>
 
-<div class="result-count">
-আমি বাংলাদেশের <span id="resultCount"></span>টি জেলা ভ্রমণ করেছি।
-</div>
+<p>
+টি জেলা ভ্রমণ করেছি 🇧🇩
+</p>
 
 </div>
 
@@ -209,223 +184,141 @@ accept="image/*">
 
 <script>
 
-let visited = new Set();
+const districts = [
+
+"ঢাকা",
+"ফরিদপুর",
+"গাজীপুর",
+"গোপালগঞ্জ",
+"জামালপুর",
+"কিশোরগঞ্জ",
+"মাদারীপুর",
+"মানিকগঞ্জ",
+"মুন্সিগঞ্জ",
+"ময়মনসিংহ",
+"নারায়ণগঞ্জ",
+"নরসিংদী",
+"নেত্রকোণা",
+"রাজবাড়ী",
+"শরীয়তপুর",
+"শেরপুর",
+"টাঙ্গাইল",
+
+"বগুড়া",
+"জয়পুরহাট",
+"নওগাঁ",
+"নাটোর",
+"চাঁপাইনবাবগঞ্জ",
+"পাবনা",
+"রাজশাহী",
+"সিরাজগঞ্জ",
+
+"দিনাজপুর",
+"গাইবান্ধা",
+"কুড়িগ্রাম",
+"লালমনিরহাট",
+"নীলফামারী",
+"পঞ্চগড়",
+"রংপুর",
+"ঠাকুরগাঁও",
+
+"বরগুনা",
+"বরিশাল",
+"ভোলা",
+"ঝালকাঠি",
+"পটুয়াখালী",
+"পিরোজপুর",
+
+"বান্দরবান",
+"ব্রাহ্মণবাড়িয়া",
+"চাঁদপুর",
+"চট্টগ্রাম",
+"কুমিল্লা",
+"কক্সবাজার",
+"ফেনী",
+"খাগড়াছড়ি",
+"লক্ষ্মীপুর",
+"নোয়াখালী",
+"রাঙ্গামাটি",
+
+"হবিগঞ্জ",
+"মৌলভীবাজার",
+"সুনামগঞ্জ",
+"সিলেট",
+
+"বাগেরহাট",
+"চুয়াডাঙ্গা",
+"যশোর",
+"ঝিনাইদহ",
+"খুলনা",
+"কুষ্টিয়া",
+"মাগুরা",
+"মেহেরপুর",
+"নড়াইল",
+"সাতক্ষীরা"
+
+];
+
+let selected = new Set();
+
+const map = document.getElementById("districtMap");
+
+districts.forEach((district,index)=>{
+
+    const button = document.createElement("button");
+
+    button.className = "district";
+
+    button.textContent = district;
+
+    button.type = "button";
+
+    button.onclick = function(){
+
+        if(selected.has(index)){
+
+            selected.delete(index);
+
+            button.classList.remove("selected");
+
+        }else{
+
+            selected.add(index);
+
+            button.classList.add("selected");
 
-const map = L.map('map',{
-  zoomControl:true
-}).setView([23.7,90.35],7);
+        }
 
-L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {
-    attribution:'© OpenStreetMap contributors'
-  }
-).addTo(map);
+        document.getElementById("total")
+        .textContent = selected.size;
 
+    };
 
-function districtStyle(feature){
-
-  const id =
-    feature.properties.ID ||
-    feature.properties.id ||
-    feature.properties.DISTRICT_ID ||
-    feature.properties.ADM2_EN ||
-    feature.properties.NAME_2;
-
-  return {
-    fillColor:
-      visited.has(String(id))
-      ? '#16805d'
-      : '#e8e3d8',
-
-    color:'#ffffff',
-
-    weight:1,
-
-    fillOpacity:.9
-  };
-}
-
-
-function districtName(feature){
-
-  return (
-
-    feature.properties.NAME_2 ||
-
-    feature.properties.DISTRICT ||
-
-    feature.properties.name ||
-
-    feature.properties.NAME ||
-
-    feature.properties.ADM2_EN ||
-
-    'জেলা'
-
-  );
-
-}
-
-
-function districtId(feature){
-
-  return String(
-
-    feature.properties.ID ||
-
-    feature.properties.id ||
-
-    feature.properties.DISTRICT_ID ||
-
-    feature.properties.ADM2_EN ||
-
-    districtName(feature)
-
-  );
-
-}
-
-
-function onEachDistrict(feature,layer){
-
-  const id = districtId(feature);
-
-  layer.bindTooltip(
-    districtName(feature),
-    {
-      sticky:true
-    }
-  );
-
-  layer.on({
-
-    click:function(){
-
-      if(visited.has(id)){
-
-        visited.delete(id);
-
-      }else{
-
-        visited.add(id);
-
-      }
-
-      updateMap();
-
-    }
-
-  });
-
-}
-
-
-let geoLayer;
-
-
-function updateMap(){
-
-  document.getElementById('count').textContent =
-    visited.size;
-
-  if(geoLayer){
-
-    geoLayer.setStyle(districtStyle);
-
-  }
-
-}
-
-
-fetch(
-'https://raw.githubusercontent.com/mostakimjihad/bd_district_geojson/master/district.json'
-)
-
-.then(response=>{
-
-  if(!response.ok){
-
-    throw new Error('Map data loading failed');
-
-  }
-
-  return response.json();
-
-})
-
-.then(data=>{
-
-  geoLayer = L.geoJSON(
-    data,
-    {
-      style:districtStyle,
-      onEachFeature:onEachDistrict
-    }
-  ).addTo(map);
-
-  map.fitBounds(
-    geoLayer.getBounds()
-  );
-
-})
-
-.catch(error=>{
-
-  console.error(error);
-
-  alert(
-    'জেলার ম্যাপ লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।'
-  );
+    map.appendChild(button);
 
 });
 
 
-function makeResult(){
+function createCard(){
 
-  const name =
-    document.getElementById('name').value.trim();
+    const name =
+    document.getElementById("name").value.trim();
 
-  if(!name){
+    if(!name){
 
-    alert('আগে আপনার নাম লিখুন।');
+        alert("আপনার নাম লিখুন");
 
-    return;
+        return;
+    }
 
-  }
+    document.getElementById("resultName")
+    .textContent = name;
 
-  document.getElementById('resultName')
-    .textContent=name;
+    document.getElementById("resultTotal")
+    .textContent = selected.size;
 
-  document.getElementById('resultCount')
-    .textContent=visited.size;
-
-  const photo =
-    document.getElementById('photo').files[0];
-
-  if(photo){
-
-    const reader =
-      new FileReader();
-
-    reader.onload=function(e){
-
-      document.getElementById('resultPhoto')
-        .src=e.target.result;
-
-    };
-
-    reader.readAsDataURL(photo);
-
-  }
-
-  document.getElementById('result')
-    .style.display='block';
-
-  window.scrollTo({
-    top:document.body.scrollHeight,
-    behavior:'smooth'
-  });
+    document.getElementById("result")
+    .style.display = "block";
 
 }
 
